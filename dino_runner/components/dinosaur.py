@@ -17,6 +17,7 @@ class Dinosaur:
         self.jump_vel = JUMP_VEL
         self.dino_jump = False
         self.dino_run = True
+        self.dino_duck = False
 
     def update(self, user_input):
         if self.dino_run:
