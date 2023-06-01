@@ -6,14 +6,14 @@ from dino_runner.components.obstacles.bird import Bird
 
 class ObstacleManager: #D R
     def __init__(self):
-        self.obstacles = []
+        self.obstacles = [] #
 
     def update(self, game): 
         obstacle_type = [
             Cactus(), 
             Bird()
         ]
-        if len(self.obstacles) == 0:
+        if len(self.obstacles) == 0:#verifica se tem obstaculo na tela p dps append #é o tamanho da lista 
             self.obstacles.append(obstacle_type[random.randint(0, 1)]) #D
 
         for obstacle in self.obstacles:
@@ -25,8 +25,10 @@ class ObstacleManager: #D R
                 break
             
     def draw(self, screen):
-        for obstacle in self.obstacles:
+        for obstacle in self.obstacles: #p cada obstaculo q ta na lista self.obstacles (inicio), todo obstaculo é adicionado la como imagem
             obstacle.draw(screen)
 
     def reset_obstacles(self):
-        self.obstacles = []
+        self.obstacles = [] #quando a gente morre ou tem martelo
+
+        

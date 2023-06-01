@@ -12,5 +12,5 @@ class Cactus(Obstacle):
     def __init__(self):
         image, cactus_pos = self.CACTUS[random.randint(0,1)]
         self.type = random.randint(0,2)
-        super().__init__(image, self.type) #entao ele e necessario p instanciar o Obstacle
-        self.rect.y = cactus_pos
+        super().__init__(image, self.type) #entao ele e necessario p instanciar o Obstacle #tipo def init da herança
+        self.rect.y = cactus_pos ##
