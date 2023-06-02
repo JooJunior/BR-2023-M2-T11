@@ -1,7 +1,8 @@
 import random
-from pygame.sprite import Sprite
 
+from pygame.sprite import Sprite
 from dino_runner.utils.constants import SCREEN_WIDTH
+
 #POWERUPS posso usar a logicado BIRD para por a sprite da maça
 class PowerUp(Sprite): 
     def __init__(self, image, type):

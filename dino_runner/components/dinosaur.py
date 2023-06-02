@@ -1,15 +1,15 @@
 import pygame
 #from pygame import Sprite
-from dino_runner.utils.constants import RUNNING, JUMPING, DUCKING, DEFAULT_TYPE, SHIELD_TYPE, DUCKING_SHIELD, JUMPING_SHIELD, RUNNING_SHIELD
+from dino_runner.utils.constants import RUNNING, JUMPING, DUCKING, DEFAULT_TYPE, SHIELD_TYPE, DUCKING_SHIELD, JUMPING_SHIELD, RUNNING_SHIELD, HAMMER_TYPE, DUCKING_HAMMER, JUMPING_HAMMER, RUNNING_HAMMER, HEART_TYPE
 
 X_POS = 80
 Y_POS = 310
 JUMP_VEL = 8.5
 Y_DUCK = 340 #var p / pos y duck 
 
-DUCK_IMG = { DEFAULT_TYPE: DUCKING, SHIELD_TYPE: DUCKING_SHIELD }  #Revisar default type #apagar os debaixo 
-JUMP_IMG = { DEFAULT_TYPE: JUMPING, SHIELD_TYPE: JUMPING_SHIELD }
-RUN_IMG = { DEFAULT_TYPE: RUNNING, SHIELD_TYPE: RUNNING_SHIELD }
+DUCK_IMG = { DEFAULT_TYPE: DUCKING, SHIELD_TYPE: DUCKING_SHIELD, HAMMER_TYPE: DUCKING_HAMMER, HEART_TYPE: DUCKING }  #Revisar default type #apagar os debaixo  #corrigir erro imagem troc duck run
+JUMP_IMG = { DEFAULT_TYPE: JUMPING, SHIELD_TYPE: JUMPING_SHIELD, HAMMER_TYPE: JUMPING_HAMMER, HEART_TYPE: JUMPING }
+RUN_IMG = { DEFAULT_TYPE: RUNNING, SHIELD_TYPE: RUNNING_SHIELD, HAMMER_TYPE: RUNNING_HAMMER, HEART_TYPE: RUNNING }
 
 
 class Dinosaur:
@@ -25,6 +25,7 @@ class Dinosaur:
         self.dino_run = True
         self.dino_duck = False
         self.setup_state()
+        self.heart = []
 
     def setup_state(self):
         self.has_power_up = False
@@ -50,7 +51,7 @@ class Dinosaur:
             self.dino_run = False
             self.dino_duck = True
 
-        elif not self.dino_jump:
+        elif not self.dino_jump and not self.dino_duck:
             self.dino_jump = False
             self.dino_run = True
             self.dino_duck = False
@@ -77,7 +78,7 @@ class Dinosaur:
             self.jump_vel = JUMP_VEL
 
     def duck(self):
-        self.image = DUCK_IMG[self.type[self.step_index]] #revisar
+        self.image = DUCK_IMG[self.type][self.step_index // 5] #revisar
         self.dino_rect = self.image.get_rect()
         self.dino_rect.x = X_POS
         self.dino_rect.y = Y_DUCK

@@ -1,13 +1,14 @@
 #classe principal que obtem os objetos do jogo 
 import pygame
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE, MUSIC
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 
 
 FONT_STYLE = "freesansbold.ttf" #alterar
+pygame.mixer.init()
 
 
 class Game:
@@ -19,7 +20,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.playing = False
         self.running = False ###
-        self.game_speed = 20
+        self.game_speed = 0
         self.x_pos_bg = 0
         self.y_pos_bg = 380
         self.score = 0 ###
@@ -30,6 +31,7 @@ class Game:
         self.power_up_manager = PowerUpManager()
 
     def execute(self):
+        
         self.running = True
         while self.running:
             if not self.playing:
@@ -42,6 +44,7 @@ class Game:
 
     def run(self):
         # Game loop: events - update - draw
+        self.music(MUSIC)
         self.playing = True
         self.score = 0
         self.obstacle_manager.reset_obstacles()
@@ -79,13 +82,15 @@ class Game:
         self.screen.blit(text, text_rect) #
 
     def draw_power_up_time(self):
-        if self.player_has_power_up:
-            time_to_show = round((self.player.power_up_time - pygame.time.get_ticks()) / 1000, 2) #arredondar casas decimais
-            if time_to_show >= 0:
-             self.draw_text(f"{self.player.type.capitalize()} enabled for {time_to_show} seconds", 22, (500, 40))
-            else:
-                self.player.has_power_up = False
-                self.player.type = DEFAULT_TYPE
+            if self.player.has_power_up:
+                time_to_show = round((self.player.power_up_time - pygame.time.get_ticks()) / 1000, 2)
+                if time_to_show >= 0:
+                    self.draw_text(f"{self.player.type.capitalize()} enabled for {time_to_show} seconds", 22, (500, 40))
+                else:
+                    self.player.has_power_up = False
+                    self.player.type = DEFAULT_TYPE
+            if len (self.player.heart) > 0:
+               self.draw_heart()
 
     def draw(self):
         self.clock.tick(FPS)
@@ -94,6 +99,8 @@ class Game:
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.draw_score()
+        self.draw_power_up_time()
+        self.power_up_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 
@@ -107,17 +114,18 @@ class Game:
         self.x_pos_bg -= self.game_speed
 
     def draw_score(self):
-
         self.draw_text(f"Score: {self.score}", 22, (1000,50))
+
  #font, tam
  #antialising True // serrilhado da letra
 #retangulo do texto
 #
-
     def draw_death_score(self):
         self.draw_text(f"Contagem de morte: {self.death_count}", 22, (550, 400)) #cor
 #metodo classe surface
 
+    def draw_heart(self):
+        self.draw_text(f"Heart: {len (self.player.heart)}", 22, (550, 300)) #por verde 
 
     def handle_events_on_menu(self):
         for event in pygame.event.get():
@@ -136,10 +144,12 @@ class Game:
             self.draw_text("Press any key to start", 22, (half_screen_width, half_screen_height))
 
         else:
+            pygame.mixer.music.stop()
             self.draw_score()
             self.draw_death_score()
             self.draw_text("Presse any key to restart", 22, (half_screen_width, half_screen_height))
             self.screen.blit(ICON, (half_screen_width - 20, half_screen_height - 140))
+
 #text_rect = text.get_rect()
 #text_rect.center = (half_screen_width, half_screen_height)
 #self.screen.blit(text, text_rect)"""
@@ -151,3 +161,9 @@ class Game:
 
         pygame.display.update()
         self.handle_events_on_menu()
+
+    def music(self, music):
+        pygame.mixer.music.load(music)
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.2)
+       
