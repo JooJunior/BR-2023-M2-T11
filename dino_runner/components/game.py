@@ -1,9 +1,11 @@
 #classe principal que obtem os objetos do jogo 
 import pygame
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.components.power_ups.power_up_manager import PowerUpManager
+
 
 FONT_STYLE = "freesansbold.ttf" #alterar
 
@@ -25,6 +27,7 @@ class Game:
 
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
+        self.power_up_manager = PowerUpManager()
 
     def execute(self):
         self.running = True
@@ -42,6 +45,9 @@ class Game:
         self.playing = True
         self.score = 0
         self.obstacle_manager.reset_obstacles()
+        self.power_up_manager.reset_power_ups()
+        self.game_speed = 20
+        self.score = 0
         while self.playing:
             self.events()
             self.update()
@@ -53,15 +59,33 @@ class Game:
                 self.playing = False
 
     def update(self):
-        user_input = pygame.key.get_pressed() #qualquer tecla pressionada
+        user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
         self.update_score()
+        self.power_up_manager.update(self)
 
     def update_score(self):
         self.score += 1
         if self.score % 100 == 0: #DDDDDDDDDDD
             self.game_speed +=5
+
+    
+    def draw_text(self, texto, size, position):
+        font = pygame.font.Font(FONT_STYLE, size) #font, tam
+        text = font.render(texto, True, (0, 0, 0)) #antialising True // serrilhado da letra
+        text_rect = text.get_rect() #retangulo do texto
+        text_rect.center = position
+        self.screen.blit(text, text_rect) #
+
+    def draw_power_up_time(self):
+        if self.player_has_power_up:
+            time_to_show = round((self.player.power_up_time - pygame.time.get_ticks()) / 1000, 2) #arredondar casas decimais
+            if time_to_show >= 0:
+             self.draw_text(f"{self.player.type.capitalize()} enabled for {time_to_show} seconds", 22, (500, 40))
+            else:
+                self.player.has_power_up = False
+                self.player.type = DEFAULT_TYPE
 
     def draw(self):
         self.clock.tick(FPS)
@@ -81,13 +105,6 @@ class Game:
             self.screen.blit(BG, (image_width + self.x_pos_bg, self.y_pos_bg))
             self.x_pos_bg = 0
         self.x_pos_bg -= self.game_speed
-
-    def draw_text(self, texto, size, position):
-        font = pygame.font.Font(FONT_STYLE, size) #font, tam
-        text = font.render(texto, True, (0, 0, 0)) #antialising True // serrilhado da letra
-        text_rect = text.get_rect() #retangulo do texto
-        text_rect.center = position
-        self.screen.blit(text, text_rect) #
 
     def draw_score(self):
 
